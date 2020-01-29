@@ -4,7 +4,34 @@ where
     F: Fn(&T) -> K,
     K: Eq,
 {
-    todo!("make the tests pass")
+    let mut res = Vec::new();
+    let mut xs = xs.into_iter();
+
+    let mut key = None;
+    let mut group = Vec::new();
+    loop {
+        let mut next_key = None;
+        let mut next_group = Vec::new();
+        for x in xs.by_ref() {
+            let k = key_fn(&x);
+            if key.as_ref() != Some(&k) {
+                next_key = Some(k);
+                next_group = vec![x];
+                break;
+            }
+            group.push(x)
+        }
+
+        if let Some(key) = key {
+            res.push((key, group));
+        }
+        key = next_key;
+        group = next_group;
+        if key.is_none() {
+            break;
+        }
+    }
+    res
 }
 
 #[test]
